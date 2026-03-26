@@ -7,43 +7,27 @@ const PORT = process.env.PORT || 3000;
 const USERNAME = "jab_photography29"; // <-- eintragen
 
 app.get("/", (req, res) => {
-  res.send("Server läuft! /follower nutzen");
+  res.send("Server läuft!");
 });
 
 app.get("/follower", async (req, res) => {
   try {
-    const targetUrl = `https://www.instagram.com/${USERNAME}/`;
+    const response = await axios.get(
+      `https://i.instagram.com/api/v1/users/web_profile_info/?username=${USERNAME}`,
+      {
+        headers: {
+          "User-Agent": "Instagram 219.0.0.12.117 Android"
+        }
+      }
+    );
 
-    // 🔥 Proxy API (allorigins)
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+    const followers =
+      response.data.data.user.edge_followed_by.count;
 
-    const response = await axios.get(proxyUrl);
-
-    const html = response.data;
-
-    console.log("HTML Preview:", html.substring(0, 300));
-
-    let followers = null;
-
-    let match = html.match(/"edge_followed_by":\{"count":(\d+)\}/);
-    if (match) followers = match[1];
-
-    if (!followers) {
-      match = html.match(/"followers":\{"count":(\d+)\}/);
-      if (match) followers = match[1];
-    }
-
-    if (!followers) {
-      match = html.match(/"userInteractionCount":"(\d+)"/);
-      if (match) followers = match[1];
-    }
-
-    if (!followers) followers = "0";
-
-    res.send(followers);
+    res.send(followers.toString());
 
   } catch (err) {
-    console.error(err.message);
+    console.error("Fehler:", err.message);
     res.send("0");
   }
 });
