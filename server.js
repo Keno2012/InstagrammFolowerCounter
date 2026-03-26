@@ -17,6 +17,7 @@ app.get("/follower", async (req, res) => {
     });
 
     const html = response.data;
+    console.log(html.substring(0, 500));
     const match = html.match(/"edge_followed_by":\{"count":(\d+)\}/);
 
     if (match && match[1]) {
