@@ -3,7 +3,7 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const USERNAME = "jab_photography29"; // Instagram Username
+const USERNAME = "instagram"; // Instagram Username
 
 app.get("/follower", async (req, res) => {
   try {
