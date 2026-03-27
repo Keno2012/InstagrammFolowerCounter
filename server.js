@@ -1,35 +1,25 @@
 const express = require("express");
 const axios = require("axios");
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const USERNAME = "jab_photography29"; // <-- eintragen
-
-app.get("/", (req, res) => {
-  res.send("Server läuft!");
-});
+const USERNAME = "jab_photography29"; // Instagram Username
 
 app.get("/follower", async (req, res) => {
   try {
-    const response = await axios.get(
-      `https://i.instagram.com/api/v1/users/web_profile_info/?username=${USERNAME}`,
-      {
-        headers: {
-          "User-Agent": "Instagram 219.0.0.12.117 Android"
-        }
+    const url = `https://www.instagram.com/${USERNAME}/?__a=1&__d=dis`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0" // wichtig, sonst blockiert Instagram
       }
-    );
+    });
 
-    const followers =
-      response.data.data.user.edge_followed_by.count;
-
+    const followers = response.data.graphql.user.edge_followed_by.count;
     res.send(followers.toString());
-
   } catch (err) {
-    console.error("Fehler:", err.message);
-    res.send("0");
+    console.error(err.message);
+    res.send("Fehler beim Abrufen");
   }
 });
 
-app.listen(PORT, () => console.log("Server läuft auf Port " + PORT));
+app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
